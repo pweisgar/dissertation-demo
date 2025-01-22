@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>DoD Demo</title>
+      <link rel="stylesheet" href="./media/bootstrap.min.css">
+      <link href = "./media/my.css" type = "text/css" rel = "stylesheet" >
+   </head>
+   <body>
+      <div class="main">
+         <!-- Header -->
+         <div id = "header">
+            <div id = "header-blue">
+               <img id = "logo"src="./media/seal.svg" alt="U.S. DEPARTMENT OF DEFENSE" title="U.S. DEPARTMENT OF DEFENSE">
+               <span id = "subTitle">ANNUAL SURVEY</span>
+            </div>
+            <div id = "header-content">
+               <div id ="search">
+                  <input class="form-control" type="text"  placeholder="Search Defense.gov">
+               </div>
+               <span id ="h1">U.S. Department of Defense</span>
+               
+            </div>
+         </div>
+         
+
+
+         <!-- Questions -->
+         <div class="col-lg-10 offset-md-1 marginTop" id="main">
+            <h2 style="text-align:center">Demo Results</h2>
+            <h5 id="toggle" style="text-align:center; color:gray;">(type the letter 't' to see and adjust cutoffs)</h5>
+         </div>
+         <div id = "tunePanel">
+            <table id = "tune">
+               <tr>
+                  <td>Probability that <strong>hesitation</strong> is significantly higher than normal cutoff</td>
+                  <td><input id= "hesitationRange" class="form-range" type="range" min="0" max="1000" value="950" class="slider" id="hesitationRange" onchange="createTable()" oninput="document.getElementById('hesitationOutput').value = this.value/10"></td>
+                  <td><output id="hesitationOutput">95</output>%</td>
+               </tr>
+               <tr>
+                  <td>Probability that <strong>cognitive conflict</strong> is significantly higher than normal cutoff</td>
+                  <td><input id= "deviationRange" class="form-range" type="range" min="0" max="1000" value="950" class="slider" id="deviationRange" onchange="createTable()" oninput="document.getElementById('deviationOutput').value = this.value/10"></td>
+                  <td><output id="deviationOutput">95</output>%</td>
+               </tr>
+               <tr>
+                  <td>Number of <strong>answer changes</strong> cutoff</td>
+                  <td><input id= "changeRange" class="form-range" type="range" min="1" max="10" value="1" class="slider" id="changeRange" onchange="createTable()" oninput="document.getElementById('changeOutput').value = this.value"></td>
+                  <td><output id="changeOutput">1</output></td>
+               </tr>
+            </table>
+         </div>
+         <div class="col-lg-10 offset-md-1 marginTop" id="main">
+            <table class="table" id="myTable">
+               <thead>
+                  <tr>
+                     <th scope="col" width="50%">Question</th>
+                     <th scope="col" width="10%">Answer</th>
+                     <th scope="col" width="40%">Reason Codes</th>
+                  </tr>
+               </thead>
+               <tbody>
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </body>
+   <script>
+      function getStandardDeviation (array) {
+         const n = array.length
+         const mean = array.reduce((a, b) => a + b) / n
+         return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n)
+      }
+      
+      function calculateAverage(array) {
+        var total = 0;
+        var count = 0;
+      
+        array.forEach(function(item, index) {
+            total += item;
+            count++;
+        });
+      
+        return total / count;
+      }
+
+      /*  POZ  --  probability of normal z value
+
+          Adapted from a polynomial approximation in:
+                  Ibbetson D, Algorithm 209
+                  Collected Algorithms of the CACM 1963 p. 616
+          Note:
+                  This routine has six digit accuracy, so it is only useful for absolute
+                  z values <= 6.  For z values > to 6.0, poz() returns 0.0.
+      */
+      var Z_MAX = 6;
+      
+      function poz(z) {
+
+          var y, x, w;
+
+          if (z == 0.0) {
+              x = 0.0;
+          } else {
+              y = 0.5 * Math.abs(z);
+              if (y > (Z_MAX * 0.5)) {
+                  x = 1.0;
+              } else if (y < 1.0) {
+                  w = y * y;
+                  x = ((((((((0.000124818987 * w
+                           - 0.001075204047) * w + 0.005198775019) * w
+                           - 0.019198292004) * w + 0.059054035642) * w
+                           - 0.151968751364) * w + 0.319152932694) * w
+                           - 0.531923007300) * w + 0.797884560593) * y * 2.0;
+              } else {
+                  y -= 2.0;
+                  x = (((((((((((((-0.000045255659 * y
+                                 + 0.000152529290) * y - 0.000019538132) * y
+                                 - 0.000676904986) * y + 0.001390604284) * y
+                                 - 0.000794620820) * y - 0.002034254874) * y
+                                 + 0.006549791214) * y - 0.010557625006) * y
+                                 + 0.011630447319) * y - 0.009279453341) * y
+                                 + 0.005353579108) * y - 0.002141268741) * y
+                                 + 0.000535310849) * y + 0.999936657524;
+              }
+          }
+          //return z > 0.0 ? ((x + 1.0) * 0.5) : ((1.0 - x) * 0.5);
+          return z > 0.0 ? ((x + 1.0) * 0.5) : -((1.0 - x) * 0.5);
+      }
+   </script>
+   <script>
+      const data = JSON.parse(sessionStorage["data"])	
+      
+      let distances = [];
+      let times = [];
+      for (const [key, value] of Object.entries(data)) {
+         distances.push(value["distance"]);
+         times.push(value["totalTime"]);
+      }
+      
+      // deviation
+      const distanceMean = 	calculateAverage(distances);
+      const distanceSD = 	getStandardDeviation (distances);
+      const timeMean =    calculateAverage(times);
+      const timeSD =   getStandardDeviation (times);
+      
+      
+      var tbodyRef = document.getElementById('myTable').getElementsByTagName('tbody')[0];
+      
+      function createTable(){
+         // remove rows
+         while (tbodyRef.rows.length > 0){
+             tbodyRef.deleteRow(0);
+         }
+
+         // add items to table
+         for (const [key, value] of Object.entries(data)) {
+            let red = false;
+            let yellow = false;
+
+            // Insert a row at the end of table
+            var newRow = tbodyRef.insertRow();
+            newRow.id = key
+            
+            // question
+            var newCell1 = newRow.insertCell();
+            var newText1 = document.createTextNode(value["name"]);
+            newCell1.appendChild(newText1);
+            
+
+            // anwser
+            var newCell2 = newRow.insertCell();
+            var newText2 = document.createTextNode(value["answer"]);
+
+            if((value["admit"] === "*" && value["answer"].length > 0)|| value["admit"] === value["answer"]){
+               newCell2.className = "admit"
+            }
+
+            newCell2.appendChild(newText2);
+
+
+            // reason codes
+            let newCell4 = newRow.insertCell();
+            let ul = document.createElement('ul');
+            
+
+            if(value["answerChanges"] > changeRange.value){
+               red = true;
+               var li = document.createElement('li');
+
+               if(value["answerChanges"] === 2){
+                  li.innerHTML = "changed answers " + (value["answerChanges"] - 1) + " time";
+               }else{
+                  li.innerHTML = "changed answers " + (value["answerChanges"] - 1) + " times";
+               }
+               ul.appendChild(li);
+
+               var li2 = document.createElement('li');
+               li2.innerHTML = value["answers"];
+               ul.appendChild(li2);
+            }
+
+            let pTime = poz(((value["totalTime"] - timeMean)/timeSD));
+            console.log(pTime);
+            if(pTime >= hesitationRange.value/1000){
+               yellow = true 
+               var li = document.createElement('li');
+               li.innerHTML = "showed " + (((value["totalTime"] - timeMean)/timeMean)*100).toFixed(2) + "% more hesitation than normal"
+               ul.appendChild(li);
+            }
+
+
+            let pDistance = poz((value["distance"] - distanceMean)/distanceSD);
+            if(pDistance >= deviationRange.value/1000){
+               yellow = true 
+               var li = document.createElement('li');
+               li.innerHTML = "displayed " + (((value["distance"] - distanceMean)/distanceMean)*100).toFixed(2) + "% more cognitive conflict than normal";
+               ul.appendChild(li);
+            }
+
+
+            if(red){
+               document.getElementById(key).className = "red"
+            }else if (yellow){
+               document.getElementById(key).className = "yellow"
+            }else{
+               document.getElementById(key).className = ""
+            }
+
+            newCell4.appendChild(ul);
+            
+         }
+      }
+      
+      createTable();
+   </script>
+   <script>
+
+      let displayed = false;
+      document.addEventListener('keyup', (e) => {
+         
+        if (e.code === "KeyT"){
+            if(!displayed){
+               document.getElementById("tunePanel").style.display = "block";
+               displayed = true;
+               document.getElementById("toggle").innerHTML = "(type the letter 't' to hide cutoffs)"
+            }else{
+               document.getElementById("tunePanel").style.display = "none";
+               displayed = false;
+               document.getElementById("toggle").innerHTML = "(type the letter 't' to see and adjust cutoffs)"
+            }
+        }
+      });
+   </script>
+</html>
