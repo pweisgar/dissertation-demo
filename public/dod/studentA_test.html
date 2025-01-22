@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programming Mock Exam</title>
+    <link rel="stylesheet" href="./media/bootstrap.min.css">
+    <link href="./media/skin.css" type="text/css" rel="stylesheet">
+    <link href="./media/my.css" type="text/css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black; /* Black background */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white; /* White content area */
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); /* White glow effect */
+            color: black;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: black;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .btn-submit {
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Programming Fundamentals Exam</h1>
+
+        <!-- Question 1: Multiple Choice -->
+        <div class="question">
+            <p><strong>1. Which programming language is known as the foundation of web development?</strong></p>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q1a" name="q1" value="Java">
+                <label class="custom-control-label" for="q1a">Java</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q1b" name="q1" value="Python">
+                <label class="custom-control-label" for="q1b">Python</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q1c" name="q1" value="JavaScript">
+                <label class="custom-control-label" for="q1c">JavaScript</label>
+            </div>
+        </div>
+
+        <!-- Question 2: True/False -->
+        <div class="question">
+            <p><strong>2. HTML is a programming language. (True/False)</strong></p>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q2a" name="q2" value="True">
+                <label class="custom-control-label" for="q2a">True</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q2b" name="q2" value="False">
+                <label class="custom-control-label" for="q2b">False</label>
+            </div>
+        </div>
+
+        <!-- Question 3: Fill in the Blank -->
+        <div class="question">
+            <p><strong>3. What does CSS stand for?</strong></p>
+            <input type="text" class="form-control" id="q3" placeholder="Your answer here">
+        </div>
+
+        <!-- Question 4: Multiple Choice -->
+        <div class="question">
+            <p><strong>4. Which of the following is used to style a web page?</strong></p>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="q4a" name="q4" value="HTML">
+                <label class="custom-control-label" for="q4a">HTML</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="q4b" name="q4" value="CSS">
+                <label class="custom-control-label" for="q4b">CSS</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="q4c" name="q4" value="JavaScript">
+                <label class="custom-control-label" for="q4c">JavaScript</label>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button class="btn-submit" onclick="validateForm()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        function validateForm() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.getElementById('q3').value.trim();
+            const q4 = document.querySelectorAll('input[name="q4"]:checked');
+
+            if (!q1 || !q2 || q3 === '' || q4.length === 0) {
+                alert("Please complete all questions before submitting.");
+                return;
+            }
+
+            alert("Your responses have been submitted successfully!");
+            window.location.href = "results.html";
+        }
+    </script>
+
+    <script src="analyze.js"></script>
+
+</body>
+</html>
