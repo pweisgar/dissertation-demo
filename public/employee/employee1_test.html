@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prospective Employee 1 (Lower Domain Competency)</title>
+    <title>Employee 1 Example (Higher Domain Competency)</title>
     <link rel="stylesheet" href="./media/bootstrap.min.css">
     <link href="./media/skin.css" type="text/css" rel="stylesheet">
     <link href="./media/my.css" type="text/css" rel="stylesheet">
@@ -54,38 +54,51 @@
 <body>
 
     <div class="container">
-        <h1>Student 1 Example (Higher Domain Competency)</h1>
+        <h1>Employee 1 Example (Higher Domain Competency)</h1>
 
+        <!-- Question 1: Fill in the Blank -->
         <div class="question">
-            <p><strong>1. How do you assign the value <em>10</em> to a variable named <em>x</em> in Python?</strong></p>
+            <p><strong>1. The five process groups in project management are ________, Planning, Executing, Monitoring and Controlling, and Closing.</strong></p>
             <input type="text" class="form-control" id="q1" placeholder="Type your answer here" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         </div>
 
+        <!-- Question 2: Fill in the Blank -->
         <div class="question">
-            <p><strong>2. A variable in Python is created using the `var` keyword.</strong></p>
+            <p><strong>2. The three main constraints in project management are ________, time, and scope.</strong></p>
+            <input type="text" class="form-control" id="q2" placeholder="Type your answer here" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        </div>
+
+        <!-- Question 3: Multiple Choice -->
+        <div class="question">
+            <p><strong>3. What is the primary purpose of the Project Charter?</strong></p>
             <div class="custom-control custom-radio">
-                <input type="radio" class="custom-control-input" id="q2a" name="q2" value="True">
-                <label class="custom-control-label" for="q2a">True</label>
+                <input type="radio" class="custom-control-input" id="q3a" name="q3" value="To define the project scope">
+                <label class="custom-control-label" for="q3a">a) To define the project scope</label>
             </div>
             <div class="custom-control custom-radio">
-                <input type="radio" class="custom-control-input" id="q2b" name="q2" value="False">
-                <label class="custom-control-label" for="q2b">False</label>
+                <input type="radio" class="custom-control-input" id="q3b" name="q3" value="To officially authorize the project">
+                <label class="custom-control-label" for="q3b">b) To officially authorize the project</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q3c" name="q3" value="To assign tasks to team members">
+                <label class="custom-control-label" for="q3c">c) To assign tasks to team members</label>
             </div>
         </div>
 
+        <!-- Question 4: Multiple Choice -->
         <div class="question">
-            <p><strong>3. What symbol is used to start a comment in Python?</strong></p>
+            <p><strong>4. Which document outlines the project’s stakeholders and their interests?</strong></p>
             <div class="custom-control custom-radio">
-                <input type="radio" class="custom-control-input" id="q3a" name="q3" value="#">
-                <label class="custom-control-label" for="q3a">#</label>
+                <input type="radio" class="custom-control-input" id="q4a" name="q4" value="Risk Register">
+                <label class="custom-control-label" for="q4a">a) Risk Register</label>
             </div>
             <div class="custom-control custom-radio">
-                <input type="radio" class="custom-control-input" id="q3b" name="q3" value="//">
-                <label class="custom-control-label" for="q3b">//</label>
+                <input type="radio" class="custom-control-input" id="q4b" name="q4" value="Stakeholder Register">
+                <label class="custom-control-label" for="q4b">b) Stakeholder Register</label>
             </div>
             <div class="custom-control custom-radio">
-                <input type="radio" class="custom-control-input" id="q3c" name="q3" value="--">
-                <label class="custom-control-label" for="q3c">--</label>
+                <input type="radio" class="custom-control-input" id="q4c" name="q4" value="Project Plan">
+                <label class="custom-control-label" for="q4c">c) Project Plan</label>
             </div>
         </div>
 
@@ -96,38 +109,74 @@
 
     <script>
         let startTime = performance.now();
-        let answerChangesQ2 = -1;
         let answerChangesQ3 = -1;
+        let answerChangesQ4 = -1;
         let mouseMovements = 0;
         let keyPressTimes = [];
         let backspaceCount = 0;
         let lastKeyTime = 0;
         let keyIntervals = [];
+        let copyEvents = 0;
+        let pasteEvents = 0;
+        let blurEvents = 0;
 
+        // Track mouse movements
         document.addEventListener('mousemove', () => {
             mouseMovements++;
         });
 
+        // Track copy events
+        document.addEventListener('copy', () => {
+            copyEvents++;
+        });
+
+        // Track paste events
+        document.addEventListener('paste', () => {
+            pasteEvents++;
+        });
+
+        // Track blur events (when the user leaves the page)
+        window.addEventListener('blur', () => {
+            blurEvents++;
+        });
+
+        // Track answer changes for multiple-choice questions
         function trackAnswerChange(questionName) {
             const selected = document.querySelector(`input[name="${questionName}"]:checked`);
             if (selected) {
-                if (questionName === "q2") {
-                    answerChangesQ2++;
-                } else if (questionName === "q3") {
+                if (questionName === "q3") {
                     answerChangesQ3++;
+                } else if (questionName === "q4") {
+                    answerChangesQ4++;
                 }
             }
         }
-
-        document.querySelectorAll('input[name="q2"]').forEach(input => {
-            input.addEventListener('change', () => trackAnswerChange("q2"));
-        });
 
         document.querySelectorAll('input[name="q3"]').forEach(input => {
             input.addEventListener('change', () => trackAnswerChange("q3"));
         });
 
+        document.querySelectorAll('input[name="q4"]').forEach(input => {
+            input.addEventListener('change', () => trackAnswerChange("q4"));
+        });
+
+        // Track keystrokes and backspaces for text inputs
         document.getElementById('q1').addEventListener('keydown', (event) => {
+            let currentTime = performance.now();
+
+            if (event.key === "Backspace") {
+                backspaceCount++;
+            }
+
+            if (lastKeyTime !== 0) {
+                keyIntervals.push(currentTime - lastKeyTime);
+            }
+
+            lastKeyTime = currentTime;
+            keyPressTimes.push(currentTime);
+        });
+
+        document.getElementById('q2').addEventListener('keydown', (event) => {
             let currentTime = performance.now();
 
             if (event.key === "Backspace") {
@@ -144,52 +193,75 @@
 
         function storeResults() {
             const correctAnswers = {
-                q1: "x = 10",
-                q2: "False",
-                q3: "#"
+                q1: "Initiating", // Correct answer for Question 1
+                q2: "cost", // Correct answer for Question 2
+                q3: "To officially authorize the project", // Correct answer for Question 3
+                q4: "Stakeholder Register" // Correct answer for Question 4
             };
 
             let score = 0;
             let userAnswers = {};
 
+            // Check Question 1
             let q1 = document.getElementById('q1').value.trim();
-            if (q1 === correctAnswers.q1) {
+            if (q1.toLowerCase() === correctAnswers.q1.toLowerCase()) {
                 score++;
             }
             userAnswers.q1 = q1 || "No answer";
 
-            const q2 = document.querySelector('input[name="q2"]:checked');
-            if (q2 && q2.value === correctAnswers.q2) {
+            // Check Question 2
+            let q2 = document.getElementById('q2').value.trim();
+            if (q2.toLowerCase() === correctAnswers.q2.toLowerCase()) {
                 score++;
             }
-            userAnswers.q2 = q2 ? q2.value : "No answer";
+            userAnswers.q2 = q2 || "No answer";
 
+            // Check Question 3
             const q3 = document.querySelector('input[name="q3"]:checked');
             if (q3 && q3.value === correctAnswers.q3) {
                 score++;
             }
             userAnswers.q3 = q3 ? q3.value : "No answer";
 
+            // Check Question 4
+            const q4 = document.querySelector('input[name="q4"]:checked');
+            if (q4 && q4.value === correctAnswers.q4) {
+                score++;
+            }
+            userAnswers.q4 = q4 ? q4.value : "No answer";
+
+            // Calculate percentage correct
+            const totalQuestions = 4;
+            const percentageCorrect = ((score / totalQuestions) * 100).toFixed(0);
+
+            // Calculate behavioral metrics
             let totalKeystrokes = keyPressTimes.length;
             let avgKeyHesitation = keyIntervals.length > 0 
                 ? (keyIntervals.reduce((a, b) => a + b, 0) / keyIntervals.length).toFixed(2)
                 : "N/A";
 
-            let studentData = {
+            let employeeData = {
+                totalCorrect: score,
+                percentageCorrect: percentageCorrect,
                 totalTime: (performance.now() - startTime).toFixed(0),
+                copyEvents: copyEvents,
+                pasteEvents: pasteEvents,
+                blurEvents: blurEvents,
                 totalDistance: mouseMovements,
                 avgSpeed: (mouseMovements / (performance.now() - startTime)).toFixed(4),
-                answerChanges: answerChangesQ2 + answerChangesQ3,
+                answerChanges: answerChangesQ3 + answerChangesQ4,
                 totalKeystrokes: totalKeystrokes,
                 backspaceCount: backspaceCount,
                 avgKeyHesitation: avgKeyHesitation
             };
 
-            localStorage.setItem('student1_answers', JSON.stringify(userAnswers));
-            localStorage.setItem('student1_score', score.toString());
-            localStorage.setItem('student1_behavior', JSON.stringify(studentData));
+            // Store results in localStorage
+            localStorage.setItem('employee1_answers', JSON.stringify(userAnswers));
+            localStorage.setItem('employee1_score', score.toString());
+            localStorage.setItem('employee1_behavior', JSON.stringify(employeeData));
 
-            window.location.href = "student2_test.html";
+            // Redirect to the next page
+            window.location.href = "employee2_test.html";
         }
     </script>
 

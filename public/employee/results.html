@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Assessment Results</title>
+    <link rel="stylesheet" href="./media/bootstrap.min.css">
+    <link href="./media/skin.css" type="text/css" rel="stylesheet">
+    <link href="./media/my.css" type="text/css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            color: black;
+        }
+        h1 {
+            text-align: center;
+            color: black;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+        .results-table th {
+            background-color: #f2f2f2;
+            color: black;
+        }
+        .better {
+            background-color: #8fd19e; /* Light Green for better performance */
+            color: black;
+        }
+        .worse {
+            background-color: #f7a8a8; /* Light Red for worse performance */
+            color: black;
+        }
+        .tie {
+            background-color: #8fd19e; /* Light Green for ties */
+            color: black;
+        }
+        .expandable {
+            display: none;
+        }
+        .toggle-container {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .toggle-btn {
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .toggle-btn:hover::after {
+            content: " Show Behavior";
+            font-size: 16px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Assessment Results</h1>
+
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Employee 1</th>
+                    <th>Employee 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Percentage Correct</td>
+                    <td id="employee1_percentage"></td>
+                    <td id="employee2_percentage"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Total Time (ms)</td>
+                    <td id="employee1_time"></td>
+                    <td id="employee2_time"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Copy Events</td>
+                    <td id="employee1_copy"></td>
+                    <td id="employee2_copy"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Paste Events</td>
+                    <td id="employee1_paste"></td>
+                    <td id="employee2_paste"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Blur Events</td>
+                    <td id="employee1_blur"></td>
+                    <td id="employee2_blur"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="toggle-container">
+            <span class="toggle-btn" onclick="toggleBehavior()">+</span>
+        </div>
+    </div>
+
+    <script>
+        function compareValues(val1, val2, isLowerBetter = true) {
+            if (val1 > val2) {
+                return isLowerBetter ? ['worse', 'better'] : ['better', 'worse'];
+            } else if (val1 < val2) {
+                return isLowerBetter ? ['better', 'worse'] : ['worse', 'better'];
+            } else {
+                return ['tie', 'tie']; // Tie case with green color
+            }
+        }
+
+        function displayResults() {
+            // Retrieve employee data from localStorage
+            const employee1Data = JSON.parse(localStorage.getItem('employee1_behavior')) || {};
+            const employee2Data = JSON.parse(localStorage.getItem('employee2_behavior')) || {};
+
+            // Display percentage correct
+            const employee1Percentage = employee1Data.percentageCorrect || "0";
+            const employee2Percentage = employee2Data.percentageCorrect || "0";
+
+            document.getElementById('employee1_percentage').textContent = employee1Percentage;
+            document.getElementById('employee2_percentage').textContent = employee2Percentage;
+
+            // Apply conditional formatting to percentage values (higher is better)
+            const [employee1Class, employee2Class] = compareValues(parseFloat(employee1Percentage), parseFloat(employee2Percentage), false);
+            document.getElementById('employee1_percentage').className = employee1Class;
+            document.getElementById('employee2_percentage').className = employee2Class;
+
+            // Display expanded metrics
+            const metrics = [
+                { id: 'time', key: 'totalTime', isLowerBetter: true },
+                { id: 'copy', key: 'copyEvents', isLowerBetter: true },
+                { id: 'paste', key: 'pasteEvents', isLowerBetter: true },
+                { id: 'blur', key: 'blurEvents', isLowerBetter: true }
+            ];
+
+            metrics.forEach(metric => {
+                let val1 = parseFloat(employee1Data[metric.key] || "0");
+                let val2 = parseFloat(employee2Data[metric.key] || "0");
+
+                if (metric.id === "time") {
+                    val1 = val1.toLocaleString();
+                    val2 = val2.toLocaleString();
+                }
+
+                document.getElementById(`employee1_${metric.id}`).textContent = val1;
+                document.getElementById(`employee2_${metric.id}`).textContent = val2;
+
+                const [e1Class, e2Class] = compareValues(val1, val2, metric.isLowerBetter);
+                document.getElementById(`employee1_${metric.id}`).className = e1Class;
+                document.getElementById(`employee2_${metric.id}`).className = e2Class;
+            });
+        }
+
+        function toggleBehavior() {
+            const expandableRows = document.querySelectorAll('.expandable');
+            expandableRows.forEach(row => {
+                row.style.display = row.style.display === "none" ? "table-row" : "none";
+            });
+        }
+
+        // Initialize the expandable rows to be hidden
+        document.addEventListener('DOMContentLoaded', () => {
+            const expandableRows = document.querySelectorAll('.expandable');
+            expandableRows.forEach(row => {
+                row.style.display = "none";
+            });
+            displayResults();
+        });
+    </script>
+
+    <script src="analyze.js"></script>
+
+</body>
+</html>
