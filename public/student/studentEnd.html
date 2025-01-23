@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results</title>
+    <link rel="stylesheet" href="./media/bootstrap.min.css">
+    <link href="./media/skin.css" type="text/css" rel="stylesheet">
+    <link href="./media/my.css" type="text/css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            color: black;
+        }
+        h1 {
+            text-align: center;
+            color: black;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+        .results-table th {
+            background-color: #f2f2f2;
+            color: black;
+        }
+        .better {
+            background-color: #8fd19e; /* Light Green for better performance */
+            color: black;
+        }
+        .worse {
+            background-color: #f7a8a8; /* Light Red for worse performance */
+            color: black;
+        }
+        .tie {
+            background-color: #8fd19e; /* Light Green for ties */
+            color: black;
+        }
+        .expandable {
+            display: none;
+        }
+        .toggle-btn {
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .toggle-btn:hover::after {
+            content: " Show Behavior";
+            font-size: 16px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Exam Results</h1>
+
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Student 1</th>
+                    <th>Student 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Percentage</td>
+                    <td id="student1_percentage"></td>
+                    <td id="student2_percentage"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Total Time (ms)</td>
+                    <td id="student1_time"></td>
+                    <td id="student2_time"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Total Distance (px)</td>
+                    <td id="student1_distance"></td>
+                    <td id="student2_distance"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Average Speed (px/ms)</td>
+                    <td id="student1_speed"></td>
+                    <td id="student2_speed"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Answer Switches</td>
+                    <td id="student1_changes"></td>
+                    <td id="student2_changes"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Total Keystrokes</td>
+                    <td id="student1_keystrokes"></td>
+                    <td id="student2_keystrokes"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Backspace Count</td>
+                    <td id="student1_backspaces"></td>
+                    <td id="student2_backspaces"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Average Key Hesitation (ms)</td>
+                    <td id="student1_hesitation"></td>
+                    <td id="student2_hesitation"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="btn-container">
+            <span class="toggle-btn" onclick="toggleBehavior()">+</span>
+        </div>
+
+        <div class="btn-container">
+            <a href="/public/employee/index.html" class="btn-home">Next Demo</a>
+        </div>
+    </div>
+
+    <script>
+        function compareValues(val1, val2, isLowerBetter = true) {
+            if (val1 > val2) {
+                return isLowerBetter ? ['worse', 'better'] : ['better', 'worse'];
+            } else if (val1 < val2) {
+                return isLowerBetter ? ['better', 'worse'] : ['worse', 'better'];
+            } else {
+                return ['tie', 'tie']; // Tie case with green color
+            }
+        }
+
+        function displayResults() {
+            const student1Score = parseInt(localStorage.getItem('student1_score') || "0", 10);
+            const student2Score = parseInt(localStorage.getItem('student2_score') || "0", 10);
+
+            const student1Percentage = ((student1Score / 3) * 100).toFixed(0);
+            const student2Percentage = ((student2Score / 3) * 100).toFixed(0);
+
+            document.getElementById('student1_percentage').textContent = student1Percentage;
+            document.getElementById('student2_percentage').textContent = student2Percentage;
+
+            // Apply conditional formatting to percentage values (higher is better)
+            const [student1Class, student2Class] = compareValues(parseFloat(student1Percentage), parseFloat(student2Percentage), false);
+            document.getElementById('student1_percentage').className = student1Class;
+            document.getElementById('student2_percentage').className = student2Class;
+
+            const student1Data = JSON.parse(localStorage.getItem('student1_behavior')) || {};
+            const student2Data = JSON.parse(localStorage.getItem('student2_behavior')) || {};
+
+            const metrics = [
+                { id: 'time', key: 'totalTime', isLowerBetter: false },
+                { id: 'distance', key: 'totalDistance', isLowerBetter: true },
+                { id: 'speed', key: 'avgSpeed', isLowerBetter: false },
+                { id: 'changes', key: 'answerChanges', isLowerBetter: true },
+                { id: 'keystrokes', key: 'totalKeystrokes', isLowerBetter: true },
+                { id: 'backspaces', key: 'backspaceCount', isLowerBetter: true },
+                { id: 'hesitation', key: 'avgKeyHesitation', isLowerBetter: true }
+            ];
+
+            metrics.forEach(metric => {
+                let val1 = parseFloat(student1Data[metric.key] || "0");
+                let val2 = parseFloat(student2Data[metric.key] || "0");
+
+                if (metric.id === "time") {
+                    val1 = val1.toLocaleString();
+                    val2 = val2.toLocaleString();
+                }
+
+                document.getElementById(`student1_${metric.id}`).textContent = val1;
+                document.getElementById(`student2_${metric.id}`).textContent = val2;
+
+                const [s1Class, s2Class] = compareValues(val1, val2, metric.isLowerBetter);
+                document.getElementById(`student1_${metric.id}`).className = s1Class;
+                document.getElementById(`student2_${metric.id}`).className = s2Class;
+            });
+        }
+
+        function toggleBehavior() {
+            const expandableRows = document.querySelectorAll('.expandable');
+            expandableRows.forEach(row => {
+                row.style.display = row.style.display === "none" ? "table-row" : "none";
+            });
+        }
+
+        displayResults();
+    </script>
+
+    <script src="analyze.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student 1 (Higher Domain Competency)</title>
+    <link rel="stylesheet" href="./media/bootstrap.min.css">
+    <link href="./media/skin.css" type="text/css" rel="stylesheet">
+    <link href="./media/my.css" type="text/css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            color: black;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: black;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .btn-submit {
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Student 1 Example (Higher Domain Competency)</h1>
+
+        <div class="question">
+            <p><strong>1. How do you assign the value <em>10</em> to a variable named <em>x</em> in Python?</strong></p>
+            <input type="text" class="form-control" id="q1" placeholder="Type your answer here" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        </div>
+
+        <div class="question">
+            <p><strong>2. A variable in Python is created using the `var` keyword.</strong></p>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q2a" name="q2" value="True">
+                <label class="custom-control-label" for="q2a">True</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q2b" name="q2" value="False">
+                <label class="custom-control-label" for="q2b">False</label>
+            </div>
+        </div>
+
+        <div class="question">
+            <p><strong>3. What symbol is used to start a comment in Python?</strong></p>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q3a" name="q3" value="#">
+                <label class="custom-control-label" for="q3a">#</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q3b" name="q3" value="//">
+                <label class="custom-control-label" for="q3b">//</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="q3c" name="q3" value="--">
+                <label class="custom-control-label" for="q3c">--</label>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button class="btn-submit" onclick="storeResults()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        let startTime = performance.now();
+        let answerChangesQ2 = -1;
+        let answerChangesQ3 = -1;
+        let mouseMovements = 0;
+        let keyPressTimes = [];
+        let backspaceCount = 0;
+        let lastKeyTime = 0;
+        let keyIntervals = [];
+
+        document.addEventListener('mousemove', () => {
+            mouseMovements++;
+        });
+
+        function trackAnswerChange(questionName) {
+            const selected = document.querySelector(`input[name="${questionName}"]:checked`);
+            if (selected) {
+                if (questionName === "q2") {
+                    answerChangesQ2++;
+                } else if (questionName === "q3") {
+                    answerChangesQ3++;
+                }
+            }
+        }
+
+        document.querySelectorAll('input[name="q2"]').forEach(input => {
+            input.addEventListener('change', () => trackAnswerChange("q2"));
+        });
+
+        document.querySelectorAll('input[name="q3"]').forEach(input => {
+            input.addEventListener('change', () => trackAnswerChange("q3"));
+        });
+
+        document.getElementById('q1').addEventListener('keydown', (event) => {
+            let currentTime = performance.now();
+
+            if (event.key === "Backspace") {
+                backspaceCount++;
+            }
+
+            if (lastKeyTime !== 0) {
+                keyIntervals.push(currentTime - lastKeyTime);
+            }
+
+            lastKeyTime = currentTime;
+            keyPressTimes.push(currentTime);
+        });
+
+        function storeResults() {
+            const correctAnswers = {
+                q1: "x = 10",
+                q2: "False",
+                q3: "#"
+            };
+
+            let score = 0;
+            let userAnswers = {};
+
+            let q1 = document.getElementById('q1').value.trim();
+            if (q1 === correctAnswers.q1) {
+                score++;
+            }
+            userAnswers.q1 = q1 || "No answer";
+
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            if (q2 && q2.value === correctAnswers.q2) {
+                score++;
+            }
+            userAnswers.q2 = q2 ? q2.value : "No answer";
+
+            const q3 = document.querySelector('input[name="q3"]:checked');
+            if (q3 && q3.value === correctAnswers.q3) {
+                score++;
+            }
+            userAnswers.q3 = q3 ? q3.value : "No answer";
+
+            let totalKeystrokes = keyPressTimes.length;
+            let avgKeyHesitation = keyIntervals.length > 0 
+                ? (keyIntervals.reduce((a, b) => a + b, 0) / keyIntervals.length).toFixed(2)
+                : "N/A";
+
+            let studentData = {
+                totalTime: (performance.now() - startTime).toFixed(0),
+                totalDistance: mouseMovements,
+                avgSpeed: (mouseMovements / (performance.now() - startTime)).toFixed(4),
+                answerChanges: answerChangesQ2 + answerChangesQ3,
+                totalKeystrokes: totalKeystrokes,
+                backspaceCount: backspaceCount,
+                avgKeyHesitation: avgKeyHesitation
+            };
+
+            localStorage.setItem('student1_answers', JSON.stringify(userAnswers));
+            localStorage.setItem('student1_score', score.toString());
+            localStorage.setItem('student1_behavior', JSON.stringify(studentData));
+
+            window.location.href = "student2_test.html";
+        }
+    </script>
+
+    <script src="analyze.js"></script>
+
+</body>
+</html>
