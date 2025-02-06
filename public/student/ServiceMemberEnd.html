@@ -115,24 +115,48 @@
                 margin: 20px 0;
                 font-style: italic;
             }
+            .chart-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                margin-top: 20px;
+            }
+            .chart-box {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            .chart-box h3 {
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 15px;
+                font-size: 1.1em;
+            }
         </style>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        />
     </head>
     <body>
         <div class="container">
             <h1>Assessment Results</h1>
 
-
             <div class="results-container">
                 <div class="member-column">
-                    <div class="member-title">Pre-Deployment Service Member</div>
+                    <div class="member-title">
+                        Pre-Deployment Service Member
+                    </div>
                     <div class="metric-card">
                         <div class="metric-label">Risk Status</div>
                         <div class="metric-value" id="memberA_status"></div>
                     </div>
                 </div>
                 <div class="member-column">
-                    <div class="member-title">Post-Deployment Service Member</div>
+                    <div class="member-title">
+                        Post-Deployment Service Member
+                    </div>
                     <div class="metric-card">
                         <div class="metric-label">Risk Status</div>
                         <div class="metric-value" id="memberB_status"></div>
@@ -149,45 +173,101 @@
                     <div class="results-container">
                         <div class="member-column">
                             <div class="metric-card">
-                                <div class="metric-label">Response Time (ms)</div>
-                                <div class="metric-value" id="memberA_time"></div>
+                                <div class="metric-label">
+                                    Response Time (ms)
+                                </div>
+                                <div
+                                    class="metric-value"
+                                    id="memberA_time"
+                                ></div>
                             </div>
                             <div class="metric-card">
-                                <div class="metric-label">Mouse Movement (px)</div>
-                                <div class="metric-value" id="memberA_distance"></div>
+                                <div class="metric-label">
+                                    Mouse Movement (px)
+                                </div>
+                                <div
+                                    class="metric-value"
+                                    id="memberA_distance"
+                                ></div>
                             </div>
                             <div class="metric-card">
-                                <div class="metric-label">Average Speed (px/ms)</div>
-                                <div class="metric-value" id="memberA_speed"></div>
+                                <div class="metric-label">
+                                    Average Speed (px/ms)
+                                </div>
+                                <div
+                                    class="metric-value"
+                                    id="memberA_speed"
+                                ></div>
                             </div>
                             <div class="metric-card">
                                 <div class="metric-label">Answer Changes</div>
-                                <div class="metric-value" id="memberA_changes"></div>
+                                <div
+                                    class="metric-value"
+                                    id="memberA_changes"
+                                ></div>
                             </div>
                         </div>
                         <div class="member-column">
                             <div class="metric-card">
-                                <div class="metric-label">Response Time (ms)</div>
-                                <div class="metric-value" id="memberB_time"></div>
+                                <div class="metric-label">
+                                    Response Time (ms)
+                                </div>
+                                <div
+                                    class="metric-value"
+                                    id="memberB_time"
+                                ></div>
                             </div>
                             <div class="metric-card">
-                                <div class="metric-label">Mouse Movement (px)</div>
-                                <div class="metric-value" id="memberB_distance"></div>
+                                <div class="metric-label">
+                                    Mouse Movement (px)
+                                </div>
+                                <div
+                                    class="metric-value"
+                                    id="memberB_distance"
+                                ></div>
                             </div>
                             <div class="metric-card">
-                                <div class="metric-label">Average Speed (px/ms)</div>
-                                <div class="metric-value" id="memberB_speed"></div>
+                                <div class="metric-label">
+                                    Average Speed (px/ms)
+                                </div>
+                                <div
+                                    class="metric-value"
+                                    id="memberB_speed"
+                                ></div>
                             </div>
                             <div class="metric-card">
                                 <div class="metric-label">Answer Changes</div>
-                                <div class="metric-value" id="memberB_changes"></div>
+                                <div
+                                    class="metric-value"
+                                    id="memberB_changes"
+                                ></div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="behavior-section">
+                <div class="behavior-title" onclick="toggleCharts()">
+                    <i class="fas fa-chart-bar"></i>
+                    Behavior Visualization
+                </div>
+                <div id="chartMetrics" style="display: none">
+                    <div class="chart-container">
+                        <div class="chart-box">
+                            <h3>Response Time Comparison</h3>
+                            <canvas id="timeChart"></canvas>
+                        </div>
+                        <div class="chart-box">
+                            <h3>Mouse Movement Comparison</h3>
+                            <canvas id="movementChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             function getStatus(score) {
                 if (score >= 0 && score <= 6) return ["Routine", "routine"];
@@ -197,46 +277,92 @@
 
             function compareValues(val1, val2, isLowerBetter = true) {
                 if (val1 > val2) {
-                    return isLowerBetter ? ["worse", "better"] : ["better", "worse"];
+                    return isLowerBetter
+                        ? ["worse", "better"]
+                        : ["better", "worse"];
                 } else if (val1 < val2) {
-                    return isLowerBetter ? ["better", "worse"] : ["worse", "better"];
+                    return isLowerBetter
+                        ? ["better", "worse"]
+                        : ["worse", "better"];
                 } else {
                     return ["tie", "tie"];
                 }
             }
 
             function displayResults() {
-                const memberAScore = parseInt(localStorage.getItem("ServiceMemberA_score") || "0", 10);
-                const memberBScore = parseInt(localStorage.getItem("ServiceMemberB_score") || "0", 10);
+                const memberAScore = parseInt(
+                    localStorage.getItem("ServiceMemberA_score") || "0",
+                    10,
+                );
+                const memberBScore = parseInt(
+                    localStorage.getItem("ServiceMemberB_score") || "0",
+                    10,
+                );
 
                 const [memberAStatus, memberAClass] = getStatus(memberAScore);
                 const [memberBStatus, memberBClass] = getStatus(memberBScore);
 
-                document.getElementById("memberA_status").textContent = memberAStatus;
-                document.getElementById("memberB_status").textContent = memberBStatus;
-                document.getElementById("memberA_status").className = `metric-value ${memberAClass}`;
-                document.getElementById("memberB_status").className = `metric-value ${memberBClass}`;
+                document.getElementById("memberA_status").textContent =
+                    memberAStatus;
+                document.getElementById("memberB_status").textContent =
+                    memberBStatus;
+                document.getElementById("memberA_status").className =
+                    `metric-value ${memberAClass}`;
+                document.getElementById("memberB_status").className =
+                    `metric-value ${memberBClass}`;
 
-                const memberAData = JSON.parse(localStorage.getItem("ServiceMemberA_behavior")) || {};
-                const memberBData = JSON.parse(localStorage.getItem("ServiceMemberB_behavior")) || {};
+                const memberAData =
+                    JSON.parse(
+                        localStorage.getItem("ServiceMemberA_behavior"),
+                    ) || {};
+                const memberBData =
+                    JSON.parse(
+                        localStorage.getItem("ServiceMemberB_behavior"),
+                    ) || {};
 
                 const metrics = [
                     { id: "time", key: "responseTime", isLowerBetter: true },
-                    { id: "distance", key: "totalDistance", isLowerBetter: true },
+                    {
+                        id: "distance",
+                        key: "totalDistance",
+                        isLowerBetter: true,
+                    },
                     { id: "speed", key: "avgSpeed", isLowerBetter: false },
-                    { id: "changes", key: "answerChanges", isLowerBetter: true }
+                    {
+                        id: "changes",
+                        key: "answerChanges",
+                        isLowerBetter: true,
+                    },
                 ];
 
                 metrics.forEach((metric) => {
-                    let valA = parseFloat((memberAData[metric.key] || "0").toString().replace(/,/g, ""));
-                    let valB = parseFloat((memberBData[metric.key] || "0").toString().replace(/,/g, ""));
+                    let valA = parseFloat(
+                        (memberAData[metric.key] || "0")
+                            .toString()
+                            .replace(/,/g, ""),
+                    );
+                    let valB = parseFloat(
+                        (memberBData[metric.key] || "0")
+                            .toString()
+                            .replace(/,/g, ""),
+                    );
 
-                    document.getElementById(`memberA_${metric.id}`).textContent = valA.toLocaleString();
-                    document.getElementById(`memberB_${metric.id}`).textContent = valB.toLocaleString();
+                    document.getElementById(
+                        `memberA_${metric.id}`,
+                    ).textContent = valA.toLocaleString();
+                    document.getElementById(
+                        `memberB_${metric.id}`,
+                    ).textContent = valB.toLocaleString();
 
-                    const [classA, classB] = compareValues(valA, valB, metric.isLowerBetter);
-                    document.getElementById(`memberA_${metric.id}`).className = `metric-value ${classA}`;
-                    document.getElementById(`memberB_${metric.id}`).className = `metric-value ${classB}`;
+                    const [classA, classB] = compareValues(
+                        valA,
+                        valB,
+                        metric.isLowerBetter,
+                    );
+                    document.getElementById(`memberA_${metric.id}`).className =
+                        `metric-value ${classA}`;
+                    document.getElementById(`memberB_${metric.id}`).className =
+                        `metric-value ${classB}`;
                 });
             }
 
@@ -252,14 +378,80 @@
                 }
             }
 
+            function toggleCharts() {
+                const charts = document.getElementById("chartMetrics");
+                const icon = document.querySelector(".behavior-title i");
+                if (charts.style.display === "none") {
+                    charts.style.display = "block";
+                    icon.className = "fas fa-chart-bar fa-rotate-180";
+                    createCharts();
+                } else {
+                    charts.style.display = "none";
+                    icon.className = "fas fa-chart-bar";
+                }
+            }
+
+            function createCharts() {
+                const memberAData = JSON.parse(localStorage.getItem("ServiceMemberA_behavior")) || {};
+                const memberBData = JSON.parse(localStorage.getItem("ServiceMemberB_behavior")) || {};
+
+                new Chart(document.getElementById('timeChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Pre-Deployment', 'Post-Deployment'],
+                        datasets: [{
+                            data: [memberAData.responseTime || 0, memberBData.responseTime || 0],
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                new Chart(document.getElementById('movementChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Pre-Deployment', 'Post-Deployment'],
+                        datasets: [{
+                            data: [memberAData.totalDistance || 0, memberBData.totalDistance || 0],
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
             document.addEventListener("DOMContentLoaded", () => {
                 displayResults();
             });
         </script>
-        <!-- Visualization link temporarily removed
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="ServiceMemberVisualization.html" class="btn btn-primary">View Behavior Visualization</a>
-        </div>
-        -->
+        <!-- Visualization link temporarily removed -->
     </body>
 </html>

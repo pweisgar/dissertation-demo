@@ -202,8 +202,12 @@
             localStorage.setItem('ServiceMemberB_answers', JSON.stringify(userAnswers));
             localStorage.setItem('ServiceMemberB_score', score);
 
-            // Redirect to the final results page, passing data via URL
-            window.location.href = `ServiceMemberVisualization.html?behavior=${encodeURIComponent(JSON.stringify(responseMetrics))}`;
+            // Store data in localStorage and redirect to end page
+            localStorage.setItem('ServiceMemberB_answers', JSON.stringify(userAnswers));
+            localStorage.setItem('ServiceMemberB_score', score);
+            localStorage.setItem('ServiceMemberB_behavior', JSON.stringify(responseMetrics));
+            
+            window.location.href = 'ServiceMemberEnd.html';
         }
     </script>
 
