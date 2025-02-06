@@ -1,6 +1,7 @@
 {
   "projects": {
-    "default": "mipro-demo"
+    "default": "mipro-demo",
+    "dissertation-demo": "dissertation-demo-8498d"
   },
   "targets": {},
   "etags": {}

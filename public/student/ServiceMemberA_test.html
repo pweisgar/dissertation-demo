@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Member A</title>
+    <link rel="stylesheet" href="./media/bootstrap.min.css">
+    <link href="./media/skin.css" type="text/css" rel="stylesheet">
+    <link href="./media/my.css" type="text/css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            color: black;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: black;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .likert-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            align-items: center;
+            text-align: center;
+        }
+        .likert-row label {
+            display: flex;
+            align-items: center;
+            justify-content: left;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+        .btn-submit {
+            padding: 6px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Service Member A</h1>
+
+        <!-- Question 1 -->
+        <div class="question">
+            <p><strong>1. How often do I have a drink containing alcohol?</strong></p>
+            <div class="likert-row">
+                <label><input type="radio" name="q1" value="Never">Never</label>
+                <label><input type="radio" name="q1" value="Monthly or less">Monthly or less</label>
+                <label><input type="radio" name="q1" value="2-4 times a month">2-4 times a month</label>
+                <label><input type="radio" name="q1" value="2-3 times a week">2-3 times a week</label>
+                <label><input type="radio" name="q1" value="4 or more times a week">4 or more times a week</label>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question">
+            <p><strong>2. How many drinks containing alcohol do I have on a typical day when I am drinking?</strong></p>
+            <div class="likert-row">
+                <label><input type="radio" name="q2" value="0-2">0-2</label>
+                <label><input type="radio" name="q2" value="3 or 4">3 or 4</label>
+                <label><input type="radio" name="q2" value="5 or 6">5 or 6</label>
+                <label><input type="radio" name="q2" value="7 or 9">7 or 9</label>
+                <label><input type="radio" name="q2" value="10 or more">10 or more</label>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question">
+            <p><strong>3. How often do I have six or more drinks on one occasion?</strong></p>
+            <div class="likert-row">
+                <label><input type="radio" name="q3" value="Never">Never</label>
+                <label><input type="radio" name="q3" value="Less than monthly">Less than monthly</label>
+                <label><input type="radio" name="q3" value="Monthly">Monthly</label>
+                <label><input type="radio" name="q3" value="Weekly">Weekly</label>
+                <label><input type="radio" name="q3" value="Daily or almost daily">Daily or almost daily</label>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="btn-container">
+            <button class="btn-submit" onclick="storeResults()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        let startTime = performance.now();
+        let mouseMovements = 0;
+
+        let previousAnswers = { q1: null, q2: null, q3: null };
+        let answerChanges = { q1: 0, q2: 0, q3: 0 };
+
+        document.addEventListener('mousemove', () => {
+            mouseMovements++;
+        });
+
+        function trackAnswerChange(questionName) {
+            const selected = document.querySelector(`input[name="${questionName}"]:checked`);
+            if (selected) {
+                if (previousAnswers[questionName] !== null && previousAnswers[questionName] !== selected.value) {
+                    answerChanges[questionName]++;
+                }
+                previousAnswers[questionName] = selected.value;
+            }
+        }
+
+        document.querySelectorAll('input[name="q1"]').forEach(input => {
+            input.addEventListener('change', () => trackAnswerChange("q1"));
+        });
+
+        document.querySelectorAll('input[name="q2"]').forEach(input => {
+            input.addEventListener('change', () => trackAnswerChange("q2"));
+        });
+
+        document.querySelectorAll('input[name="q3"]').forEach(input => {
+            input.addEventListener('change', () => trackAnswerChange("q3"));
+        });
+
+        function calculateScore(answer, scale) {
+            return scale.indexOf(answer);
+        }
+
+        function storeResults() {
+            let scoringScale = {
+                q1: ["Never", "Monthly or less", "2-4 times a month", "2-3 times a week", "4 or more times a week"],
+                q2: ["0-2", "3 or 4", "5 or 6", "7 or 9", "10 or more"],
+                q3: ["Never", "Less than monthly", "Monthly", "Weekly", "Daily or almost daily"]
+            };
+
+            let userAnswers = {
+                q1: document.querySelector('input[name="q1"]:checked')?.value || "No answer",
+                q2: document.querySelector('input[name="q2"]:checked')?.value || "No answer",
+                q3: document.querySelector('input[name="q3"]:checked')?.value || "No answer"
+            };
+
+            let score = 
+                calculateScore(userAnswers.q1, scoringScale.q1) +
+                calculateScore(userAnswers.q2, scoringScale.q2) +
+                calculateScore(userAnswers.q3, scoringScale.q3);
+
+            let responseMetrics = {
+                responseTime: (performance.now() - startTime).toFixed(0),
+                totalDistance: mouseMovements,
+                avgSpeed: (mouseMovements / (performance.now() - startTime)).toFixed(4),
+                answerChanges: answerChanges.q1 + answerChanges.q2 + answerChanges.q3
+            };
+
+            localStorage.setItem('ServiceMemberA_answers', JSON.stringify(userAnswers));
+            localStorage.setItem('ServiceMemberA_behavior', JSON.stringify(responseMetrics));
+            localStorage.setItem('ServiceMemberA_score', score);
+
+            // Redirect to the next page
+            window.location.href = "ServiceMemberB_test.html";
+        }
+    </script>
+
+</body>
+</html>

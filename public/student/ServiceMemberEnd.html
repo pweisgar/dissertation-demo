@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Results</title>
+    <link rel="stylesheet" href="./media/bootstrap.min.css">
+    <style>
+        body {
+            background-color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            color: black;
+        }
+        h1 {
+            text-align: center;
+            color: black;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+        .results-table th {
+            background-color: #f2f2f2;
+            color: black;
+        }
+        .better {
+            background-color: #8fd19e; /* Green */
+            color: black;
+        }
+        .worse {
+            background-color: #f7a8a8; /* Red */
+            color: black;
+        }
+        .tie {
+            background-color: #8fd19e; /* Green */
+            color: black;
+        }
+        .routine {
+            background-color: #8fd19e; /* Green */
+            color: black;
+        }
+        .priority {
+            background-color: #f1c40f; /* Yellow */
+            color: black;
+        }
+        .critical {
+            background-color: #e74c3c; /* Red */
+            color: black;
+        }
+        .expandable {
+            display: none;
+        }
+        .toggle-btn {
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            position: static;
+        }
+        .toggle-btn:hover::after {
+            content: " Show Digital Behavior";
+            font-size: 16px;
+            font-weight: normal;
+            position: left;
+            left: 30px;
+        }
+        .btn-container {
+            text-align: right;
+            margin-top: 30px;
+        }
+        /* Commented out for now */
+        /*
+        .btn-home {
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: none;
+        }
+        .btn-home:hover {
+            background-color: #0056b3;
+        }
+        */
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Assessment Results</h1>
+
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Service Member A</th>
+                    <th>Service Member B</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Status</td>
+                    <td id="memberA_status"></td>
+                    <td id="memberB_status"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Total Time (ms)</td>
+                    <td id="memberA_time"></td>
+                    <td id="memberB_time"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Total Distance (px)</td>
+                    <td id="memberA_distance"></td>
+                    <td id="memberB_distance"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Average Speed (px/ms)</td>
+                    <td id="memberA_speed"></td>
+                    <td id="memberB_speed"></td>
+                </tr>
+                <tr class="expandable">
+                    <td>Answer Switches</td>
+                    <td id="memberA_changes"></td>
+                    <td id="memberB_changes"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="btn-container">
+            <span class="toggle-btn" onclick="toggleBehavior()">+</span>
+        </div>
+
+        <!-- Commented out for now -->
+        <!--
+        <div class="btn-container">
+            <a href="../employee/index.html" class="btn-home">Next Demo</a>
+        </div>
+        -->
+    </div>
+
+    <script>
+        function getStatus(score) {
+            if (score >= 0 && score <= 6) return ['Routine', 'routine'];
+            if (score >= 7 && score <= 9) return ['Priority', 'priority'];
+            return ['Critical', 'critical'];
+        }
+
+        function compareValues(val1, val2, isLowerBetter = true) {
+            if (val1 > val2) {
+                return isLowerBetter ? ['worse', 'better'] : ['better', 'worse'];
+            } else if (val1 < val2) {
+                return isLowerBetter ? ['better', 'worse'] : ['worse', 'better'];
+            } else {
+                return ['tie', 'tie'];
+            }
+        }
+
+        function displayResults() {
+            const memberAScore = parseInt(localStorage.getItem('ServiceMemberA_score') || "0", 10);
+            const memberBScore = parseInt(localStorage.getItem('ServiceMemberB_score') || "0", 10);
+
+            const [memberAStatus, memberAClass] = getStatus(memberAScore);
+            const [memberBStatus, memberBClass] = getStatus(memberBScore);
+
+            document.getElementById('memberA_status').textContent = memberAStatus;
+            document.getElementById('memberB_status').textContent = memberBStatus;
+            document.getElementById('memberA_status').className = memberAClass;
+            document.getElementById('memberB_status').className = memberBClass;
+
+            const memberAData = JSON.parse(localStorage.getItem('ServiceMemberA_behavior')) || {};
+            const memberBData = JSON.parse(localStorage.getItem('ServiceMemberB_behavior')) || {};
+
+            const metrics = [
+                { id: 'time', key: 'responseTime', isLowerBetter: true },
+                { id: 'distance', key: 'totalDistance', isLowerBetter: true },
+                { id: 'speed', key: 'avgSpeed', isLowerBetter: false },
+                { id: 'changes', key: 'answerChanges', isLowerBetter: true }
+            ];
+
+            metrics.forEach(metric => {
+                let valA = parseFloat((memberAData[metric.key] || "0").toString().replace(/,/g, ''));
+                let valB = parseFloat((memberBData[metric.key] || "0").toString().replace(/,/g, ''));
+
+                document.getElementById(`memberA_${metric.id}`).textContent = valA.toLocaleString();
+                document.getElementById(`memberB_${metric.id}`).textContent = valB.toLocaleString();
+
+                const [classA, classB] = compareValues(valA, valB, metric.isLowerBetter);
+                document.getElementById(`memberA_${metric.id}`).className = classA;
+                document.getElementById(`memberB_${metric.id}`).className = classB;
+            });
+        }
+
+        function toggleBehavior() {
+            const expandableRows = document.querySelectorAll('.expandable');
+            expandableRows.forEach(row => {
+                row.style.display = row.style.display === "none" ? "table-row" : "none";
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.expandable').forEach(row => row.style.display = "none");
+            displayResults();
+        });
+    </script>
+
+</body>
+</html>

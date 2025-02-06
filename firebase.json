@@ -9,7 +9,7 @@
     "rewrites": [
       {
         "source": "/student/**",
-        "destination": "/student/student1_test.html"
+        "destination": "/student/ServiceMemberA_test.html"
       }
     ]
   }

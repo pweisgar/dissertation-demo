@@ -8,17 +8,22 @@
             background-color: black; /* Set background to black */
             color: black; /* Text color inside the body */
             font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
-            padding: 50px 20px;
+            padding: 20px;
         }
         .container {
-            max-width: 600px;
+            max-width: 900px;
+            height: 420px;
             margin: auto;
             background-color: white; /* Content window is now white */
-            padding: 40px;
+            padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); /* White glow effect */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Vertically center content */
+            align-items: center; /* Horizontally center text */
+            text-align: center;
         }
         h1 {
             font-size: 28px;
@@ -30,8 +35,14 @@
             line-height: 1.5;
             color: black; /* Text inside container black */
         }
-        .btn {
-            padding: 15px 30px;
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            margin-top: auto;
+        }
+        .btn-submit {
+            padding: 6px 30px;
             font-size: 18px;
             color: white;
             background-color: #007BFF;
@@ -39,17 +50,31 @@
             border-radius: 5px;
             cursor: pointer;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
-        .btn:hover {
+        .btn-submit:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Which student has achieved a higher level of mastery?</h1>
-        <p>Please click the button below to begin the demo.</p>
-        <a href="/student/student1_test.html" class="btn">Begin</a>
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
+        <h1>Dissertation Demonstration</h1>
+        <p>Please click the Start button below to begin the demo.</p>
+        
+        <!-- Button Container -->
+        <div class="btn-container">
+            <a href="/student/ServiceMemberA_test.html" class="btn-submit">Start</a>
+        </div>
     </div>
 </body>
 </html>
