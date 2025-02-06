@@ -3,42 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service Member A</title>
+    <title>Pre-Deployment Assessment</title>
     <link rel="stylesheet" href="./media/bootstrap.min.css">
     <link href="./media/skin.css" type="text/css" rel="stylesheet">
     <link href="./media/my.css" type="text/css" rel="stylesheet">
     <style>
         body {
-            background-color: black;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #000000, #1a1a1a);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
             color: white;
+            min-height: 100vh;
         }
         .container {
             max-width: 900px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
             color: black;
         }
         h1 {
             text-align: center;
-            font-size: 24px;
-            margin-bottom: 30px;
-            color: black;
+            font-size: 28px;
+            margin-bottom: 35px;
+            color: #2c3e50;
+            font-weight: 600;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
         }
         .question {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .question p {
+            font-size: 16px;
+            margin-bottom: 15px;
         }
         .likert-row {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 15px;
             align-items: center;
-            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
         }
         .likert-row label {
             display: flex;
@@ -46,31 +61,40 @@
             justify-content: left;
             gap: 8px;
             white-space: nowrap;
+            font-size: 14px;
+            padding: 8px;
+            transition: all 0.2s ease;
+        }
+        .likert-row label:hover {
+            background: #f0f4f8;
+            border-radius: 5px;
         }
         .btn-container {
             display: flex;
             justify-content: flex-end;
-            margin-top: 30px;
+            margin-top: 40px;
         }
         .btn-submit {
-            padding: 6px 30px;
-            font-size: 18px;
+            padding: 12px 40px;
+            font-size: 16px;
             color: white;
-            background-color: #007BFF;
+            background: linear-gradient(135deg, #007BFF, #0056b3);
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .btn-submit:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #0056b3, #004494);
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>Service Member A</h1>
-
+        <h1>Pre-Deployment Service Member Assessment</h1>
         <!-- Question 1 -->
         <div class="question">
             <p><strong>1. How often do I have a drink containing alcohol?</strong></p>
@@ -175,12 +199,21 @@
                 answerChanges: answerChanges.q1 + answerChanges.q2 + answerChanges.q3
             };
 
-            localStorage.setItem('ServiceMemberA_answers', JSON.stringify(userAnswers));
-            localStorage.setItem('ServiceMemberA_behavior', JSON.stringify(responseMetrics));
-            localStorage.setItem('ServiceMemberA_score', score);
+            let urlParams = new URLSearchParams(window.location.search);
+            let existingBehavior = urlParams.get('behavior') ? JSON.parse(decodeURIComponent(urlParams.get('behavior'))) : {};
 
-            // Redirect to the next page
-            window.location.href = "ServiceMemberB_test.html";
+            //Merge existing behavior data with the new response metrics
+
+            let mergedBehavior = {...existingBehavior, ...responseMetrics};
+
+            const queryString = new URLSearchParams({
+                answers: JSON.stringify(userAnswers),
+                behavior: JSON.stringify(mergedBehavior),
+                score: score
+            }).toString();
+
+
+            window.location.href = `ServiceMemberB_test.html?${queryString}`;
         }
     </script>
 

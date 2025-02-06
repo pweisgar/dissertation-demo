@@ -1,227 +1,265 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assessment Results</title>
-    <link rel="stylesheet" href="./media/bootstrap.min.css">
-    <style>
-        body {
-            background-color: black;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            color: white;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            color: black;
-        }
-        h1 {
-            text-align: center;
-            color: black;
-        }
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .results-table th, .results-table td {
-            border: 1px solid #ddd;
-            padding: 15px;
-            text-align: center;
-        }
-        .results-table th {
-            background-color: #f2f2f2;
-            color: black;
-        }
-        .better {
-            background-color: #8fd19e; /* Green */
-            color: black;
-        }
-        .worse {
-            background-color: #f7a8a8; /* Red */
-            color: black;
-        }
-        .tie {
-            background-color: #8fd19e; /* Green */
-            color: black;
-        }
-        .routine {
-            background-color: #8fd19e; /* Green */
-            color: black;
-        }
-        .priority {
-            background-color: #f1c40f; /* Yellow */
-            color: black;
-        }
-        .critical {
-            background-color: #e74c3c; /* Red */
-            color: black;
-        }
-        .expandable {
-            display: none;
-        }
-        .toggle-btn {
-            cursor: pointer;
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0;
-            position: static;
-        }
-        .toggle-btn:hover::after {
-            content: " Show Digital Behavior";
-            font-size: 16px;
-            font-weight: normal;
-            position: left;
-            left: 30px;
-        }
-        .btn-container {
-            text-align: right;
-            margin-top: 30px;
-        }
-        /* Commented out for now */
-        /*
-        .btn-home {
-            padding: 15px 30px;
-            font-size: 18px;
-            color: white;
-            background-color: #007BFF;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: none;
-        }
-        .btn-home:hover {
-            background-color: #0056b3;
-        }
-        */
-    </style>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Assessment Results</title>
+        <link rel="stylesheet" href="./media/bootstrap.min.css" />
+        <style>
+            body {
+                background-color: black;
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .container {
+                max-width: 1000px;
+                margin: auto;
+                background: #f8f9fa;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            }
+            h1 {
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 30px;
+                font-size: 2.5em;
+            }
+            .results-container {
+                display: flex;
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+            .member-column {
+                flex: 1;
+                padding: 20px;
+                border-radius: 10px;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .member-title {
+                text-align: center;
+                font-size: 1.5em;
+                margin-bottom: 20px;
+                color: #2c3e50;
+            }
+            .metric-card {
+                background: #f8f9fa;
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+            .metric-label {
+                font-weight: bold;
+                color: #555;
+                margin-bottom: 5px;
+            }
+            .metric-value {
+                font-size: 1.2em;
+                text-align: center;
+                padding: 8px;
+                border-radius: 5px;
+            }
+            .routine {
+                background-color: #d4edda;
+                color: #155724;
+            }
+            .priority {
+                background-color: #fff3cd;
+                color: #856404;
+            }
+            .critical {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+            .better {
+                background-color: #d4edda;
+                color: #155724;
+            }
+            .worse {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+            .tie {
+                background-color: #e2e3e5;
+                color: #383d41;
+            }
+            .behavior-section {
+                margin-top: 20px;
+                padding: 20px;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .behavior-title {
+                color: #2c3e50;
+                margin-bottom: 15px;
+                font-size: 1.2em;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+            .behavior-title i {
+                margin-right: 10px;
+            }
+            .help-text {
+                font-size: 0.9em;
+                color: #666;
+                text-align: center;
+                margin: 20px 0;
+                font-style: italic;
+            }
+        </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    </head>
+    <body>
+        <div class="container">
+            <h1>Assessment Results</h1>
 
-    <div class="container">
-        <h1>Assessment Results</h1>
 
-        <table class="results-table">
-            <thead>
-                <tr>
-                    <th>Metric</th>
-                    <th>Service Member A</th>
-                    <th>Service Member B</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Status</td>
-                    <td id="memberA_status"></td>
-                    <td id="memberB_status"></td>
-                </tr>
-                <tr class="expandable">
-                    <td>Total Time (ms)</td>
-                    <td id="memberA_time"></td>
-                    <td id="memberB_time"></td>
-                </tr>
-                <tr class="expandable">
-                    <td>Total Distance (px)</td>
-                    <td id="memberA_distance"></td>
-                    <td id="memberB_distance"></td>
-                </tr>
-                <tr class="expandable">
-                    <td>Average Speed (px/ms)</td>
-                    <td id="memberA_speed"></td>
-                    <td id="memberB_speed"></td>
-                </tr>
-                <tr class="expandable">
-                    <td>Answer Switches</td>
-                    <td id="memberA_changes"></td>
-                    <td id="memberB_changes"></td>
-                </tr>
-            </tbody>
-        </table>
+            <div class="results-container">
+                <div class="member-column">
+                    <div class="member-title">Pre-Deployment Service Member</div>
+                    <div class="metric-card">
+                        <div class="metric-label">Risk Status</div>
+                        <div class="metric-value" id="memberA_status"></div>
+                    </div>
+                </div>
+                <div class="member-column">
+                    <div class="member-title">Post-Deployment Service Member</div>
+                    <div class="metric-card">
+                        <div class="metric-label">Risk Status</div>
+                        <div class="metric-value" id="memberB_status"></div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="btn-container">
-            <span class="toggle-btn" onclick="toggleBehavior()">+</span>
+            <div class="behavior-section">
+                <div class="behavior-title" onclick="toggleBehavior()">
+                    <i class="fas fa-chart-line"></i>
+                    Digital Behavior Analysis
+                </div>
+                <div id="behaviorMetrics" style="display: none">
+                    <div class="results-container">
+                        <div class="member-column">
+                            <div class="metric-card">
+                                <div class="metric-label">Response Time (ms)</div>
+                                <div class="metric-value" id="memberA_time"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Mouse Movement (px)</div>
+                                <div class="metric-value" id="memberA_distance"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Average Speed (px/ms)</div>
+                                <div class="metric-value" id="memberA_speed"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Answer Changes</div>
+                                <div class="metric-value" id="memberA_changes"></div>
+                            </div>
+                        </div>
+                        <div class="member-column">
+                            <div class="metric-card">
+                                <div class="metric-label">Response Time (ms)</div>
+                                <div class="metric-value" id="memberB_time"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Mouse Movement (px)</div>
+                                <div class="metric-value" id="memberB_distance"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Average Speed (px/ms)</div>
+                                <div class="metric-value" id="memberB_speed"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Answer Changes</div>
+                                <div class="metric-value" id="memberB_changes"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Commented out for now -->
-        <!--
-        <div class="btn-container">
-            <a href="../employee/index.html" class="btn-home">Next Demo</a>
+        <script>
+            function getStatus(score) {
+                if (score >= 0 && score <= 6) return ["Routine", "routine"];
+                if (score >= 7 && score <= 9) return ["Priority", "priority"];
+                return ["Critical", "critical"];
+            }
+
+            function compareValues(val1, val2, isLowerBetter = true) {
+                if (val1 > val2) {
+                    return isLowerBetter ? ["worse", "better"] : ["better", "worse"];
+                } else if (val1 < val2) {
+                    return isLowerBetter ? ["better", "worse"] : ["worse", "better"];
+                } else {
+                    return ["tie", "tie"];
+                }
+            }
+
+            function displayResults() {
+                const memberAScore = parseInt(localStorage.getItem("ServiceMemberA_score") || "0", 10);
+                const memberBScore = parseInt(localStorage.getItem("ServiceMemberB_score") || "0", 10);
+
+                const [memberAStatus, memberAClass] = getStatus(memberAScore);
+                const [memberBStatus, memberBClass] = getStatus(memberBScore);
+
+                document.getElementById("memberA_status").textContent = memberAStatus;
+                document.getElementById("memberB_status").textContent = memberBStatus;
+                document.getElementById("memberA_status").className = `metric-value ${memberAClass}`;
+                document.getElementById("memberB_status").className = `metric-value ${memberBClass}`;
+
+                const memberAData = JSON.parse(localStorage.getItem("ServiceMemberA_behavior")) || {};
+                const memberBData = JSON.parse(localStorage.getItem("ServiceMemberB_behavior")) || {};
+
+                const metrics = [
+                    { id: "time", key: "responseTime", isLowerBetter: true },
+                    { id: "distance", key: "totalDistance", isLowerBetter: true },
+                    { id: "speed", key: "avgSpeed", isLowerBetter: false },
+                    { id: "changes", key: "answerChanges", isLowerBetter: true }
+                ];
+
+                metrics.forEach((metric) => {
+                    let valA = parseFloat((memberAData[metric.key] || "0").toString().replace(/,/g, ""));
+                    let valB = parseFloat((memberBData[metric.key] || "0").toString().replace(/,/g, ""));
+
+                    document.getElementById(`memberA_${metric.id}`).textContent = valA.toLocaleString();
+                    document.getElementById(`memberB_${metric.id}`).textContent = valB.toLocaleString();
+
+                    const [classA, classB] = compareValues(valA, valB, metric.isLowerBetter);
+                    document.getElementById(`memberA_${metric.id}`).className = `metric-value ${classA}`;
+                    document.getElementById(`memberB_${metric.id}`).className = `metric-value ${classB}`;
+                });
+            }
+
+            function toggleBehavior() {
+                const metrics = document.getElementById("behaviorMetrics");
+                const icon = document.querySelector(".behavior-title i");
+                if (metrics.style.display === "none") {
+                    metrics.style.display = "block";
+                    icon.className = "fas fa-chart-line fa-rotate-180";
+                } else {
+                    metrics.style.display = "none";
+                    icon.className = "fas fa-chart-line";
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                displayResults();
+            });
+        </script>
+        <!-- Visualization link temporarily removed
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="ServiceMemberVisualization.html" class="btn btn-primary">View Behavior Visualization</a>
         </div>
         -->
-    </div>
-
-    <script>
-        function getStatus(score) {
-            if (score >= 0 && score <= 6) return ['Routine', 'routine'];
-            if (score >= 7 && score <= 9) return ['Priority', 'priority'];
-            return ['Critical', 'critical'];
-        }
-
-        function compareValues(val1, val2, isLowerBetter = true) {
-            if (val1 > val2) {
-                return isLowerBetter ? ['worse', 'better'] : ['better', 'worse'];
-            } else if (val1 < val2) {
-                return isLowerBetter ? ['better', 'worse'] : ['worse', 'better'];
-            } else {
-                return ['tie', 'tie'];
-            }
-        }
-
-        function displayResults() {
-            const memberAScore = parseInt(localStorage.getItem('ServiceMemberA_score') || "0", 10);
-            const memberBScore = parseInt(localStorage.getItem('ServiceMemberB_score') || "0", 10);
-
-            const [memberAStatus, memberAClass] = getStatus(memberAScore);
-            const [memberBStatus, memberBClass] = getStatus(memberBScore);
-
-            document.getElementById('memberA_status').textContent = memberAStatus;
-            document.getElementById('memberB_status').textContent = memberBStatus;
-            document.getElementById('memberA_status').className = memberAClass;
-            document.getElementById('memberB_status').className = memberBClass;
-
-            const memberAData = JSON.parse(localStorage.getItem('ServiceMemberA_behavior')) || {};
-            const memberBData = JSON.parse(localStorage.getItem('ServiceMemberB_behavior')) || {};
-
-            const metrics = [
-                { id: 'time', key: 'responseTime', isLowerBetter: true },
-                { id: 'distance', key: 'totalDistance', isLowerBetter: true },
-                { id: 'speed', key: 'avgSpeed', isLowerBetter: false },
-                { id: 'changes', key: 'answerChanges', isLowerBetter: true }
-            ];
-
-            metrics.forEach(metric => {
-                let valA = parseFloat((memberAData[metric.key] || "0").toString().replace(/,/g, ''));
-                let valB = parseFloat((memberBData[metric.key] || "0").toString().replace(/,/g, ''));
-
-                document.getElementById(`memberA_${metric.id}`).textContent = valA.toLocaleString();
-                document.getElementById(`memberB_${metric.id}`).textContent = valB.toLocaleString();
-
-                const [classA, classB] = compareValues(valA, valB, metric.isLowerBetter);
-                document.getElementById(`memberA_${metric.id}`).className = classA;
-                document.getElementById(`memberB_${metric.id}`).className = classB;
-            });
-        }
-
-        function toggleBehavior() {
-            const expandableRows = document.querySelectorAll('.expandable');
-            expandableRows.forEach(row => {
-                row.style.display = row.style.display === "none" ? "table-row" : "none";
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.expandable').forEach(row => row.style.display = "none");
-            displayResults();
-        });
-    </script>
-
-</body>
+    </body>
 </html>

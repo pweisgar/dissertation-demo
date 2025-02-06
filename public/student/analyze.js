@@ -30,13 +30,21 @@ function updateMove(e) {
         var a = e.pageX - firstX;
         var b = e.pageY - firstY;
         distance += Math.sqrt( a*a + b*b );
-        
       }
   
       lastX = e.pageX;
       lastY = e.pageY;
+
+      // Store mouse movements for visualization
+      let behavior = JSON.parse(sessionStorage.getItem('behavior') || '{}');
+      if (!behavior.mouseMovements) behavior.mouseMovements = [];
+      behavior.mouseMovements.push({ x: e.pageX, y: e.pageY, time: new Date().getTime() });
+      sessionStorage.setItem('behavior', JSON.stringify(behavior));
+      // Clear old data
+      if (behavior.mouseMovements.length > 1000) {
+          behavior.mouseMovements = behavior.mouseMovements.slice(-1000);
+      }
   }
-  
 }
 
 
