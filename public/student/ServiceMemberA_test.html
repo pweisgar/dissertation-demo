@@ -199,21 +199,13 @@
                 answerChanges: answerChanges.q1 + answerChanges.q2 + answerChanges.q3
             };
 
-            let urlParams = new URLSearchParams(window.location.search);
-            let existingBehavior = urlParams.get('behavior') ? JSON.parse(decodeURIComponent(urlParams.get('behavior'))) : {};
+            // Store data in localStorage instead of URL parameters
+            localStorage.setItem('ServiceMemberA_answers', JSON.stringify(userAnswers));
+            localStorage.setItem('ServiceMemberA_score', score);
+            localStorage.setItem('ServiceMemberA_behavior', JSON.stringify(responseMetrics));
 
-            //Merge existing behavior data with the new response metrics
-
-            let mergedBehavior = {...existingBehavior, ...responseMetrics};
-
-            const queryString = new URLSearchParams({
-                answers: JSON.stringify(userAnswers),
-                behavior: JSON.stringify(mergedBehavior),
-                score: score
-            }).toString();
-
-
-            window.location.href = `ServiceMemberB_test.html?${queryString}`;
+            // Navigate to the next page
+            window.location.href = 'ServiceMemberB_test.html';
         }
     </script>
 
